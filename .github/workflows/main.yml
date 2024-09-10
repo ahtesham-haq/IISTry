@@ -64,7 +64,7 @@ jobs:
             Write-Host "Full profile path is incorrect: $publishProfile"
           }
           
-      - name: Stop and Restart IIS Application Pool
+      - name: Stop IIS Application Pool
         run: |
           $appPoolName = "mydeploy" # Replace with your application pool name
           Import-Module WebAdministration
@@ -79,7 +79,7 @@ jobs:
           Write-Host "Publish profile: $publishProfile"
           & $env:MSBUILD_PATH "$($env:GITHUB_WORKSPACE)/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
 
-      - name: Stop and Restart IIS Application Pool
+      - name: Restart IIS Application Pool
         run: |
           $appPoolName = "mydeploy" # Replace with your application pool name
           Import-Module WebAdministration          
