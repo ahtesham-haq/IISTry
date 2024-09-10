@@ -51,11 +51,13 @@ jobs:
       - name: Build solution using MSBuild
         run: |
           & $env:MSBUILD_PATH "${{ github.workspace }}/WebApplicationMy.sln" /p:Configuration=Release
+          echo "Build path: ${GITHUB_WORKSPACE}/WebApplicationMy.sln"
 
       - name: Publish to folder using MSBuild
         run: |
           & $env:MSBUILD_PATH "${{ github.workspace }}/WebApplicationMy.sln" /p:Configuration=Release /p:PublishMethod=FileSystem /p:PublishUrl="${{ github.workspace }}/publish"
-
+          echo "Publish path: ${GITHUB_WORKSPACE}/publish"
+          
       - name: List files in publish directory
         run: |
           Get-ChildItem -Path "${{ github.workspace }}/publish" -Recurse
