@@ -22,7 +22,7 @@ jobs:
 
       - name: Install NuGet CLI
         uses: nuget/setup-nuget@v1
-      
+
       # Restore NuGet packages (if applicable)
       - name: Restore NuGet packages
         run: nuget restore
@@ -51,12 +51,14 @@ jobs:
             New-Item -Path "${{ github.workspace }}/publish" -ItemType Directory
           }
 
-      - name: Publish using WebDeploy with Profile
+      - name: Publish using MSBuild
         run: |
-          $publishProfile = "Properties\PublishProfiles\Profile.pubxml"
+          $publishProfile = "IISTry/WebApplicationMy/Properties/PublishProfiles/FolderProfile.pubxml"
+          $publishPath = "D:\Temp\actions-runner\_work\IISTry\IISTry\publish"
           echo "Publish profile: $publishProfile"
-          & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile
+          echo "Publish path: $publishPath"
+          & $env:MSBUILD_PATH "${{ github.workspace }}/IISTry/WebApplicationMy/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$publishPath"
 
       - name: List files in publish directory
         run: |
-          Get-ChildItem -Path "${{ github.workspace }}/publish" -Recurse
+          Get-ChildItem -Path "D:\Temp\actions-runner\_work\IISTry\IISTry\publish" -Recurse
