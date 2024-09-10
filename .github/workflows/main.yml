@@ -29,10 +29,12 @@ jobs:
         run: nuget restore
 
       - name: Find MSBuild Path
-        id: msbuild
         run: |
-          $msbuildPath = & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
-          echo "MSBUILD_PATH=$msbuildPath" >> $env:GITHUB_ENV
+          $msbuildPath = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft Visual Studio" -Recurse -Filter "MSBuild.exe" | Select-Object -First 1
+          if ($msbuildPath) {
+            echo "MSBUILD_PATH=$($msbuildPath.FullName)" >> $env:GITHUB_ENV
+          } else {
+            Write-Error "MSBuild.exe not found"
 
       - name: Build solution using MSBuild
         run: |
