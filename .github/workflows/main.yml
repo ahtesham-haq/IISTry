@@ -47,18 +47,12 @@ jobs:
           }
 
 
-
-      - name: Build solution using MSBuild
-        run: |
-         $solutionPath = "${{ github.workspace }}\WebApplicationMy.sln"
-          echo "Build path: $solutionPath"
-          & $env:MSBUILD_PATH $solutionPath /p:Configuration=Release
-
-      - name: Publish to folder using MSBuild
+      - name: Build and Publish solution using MSBuild
         run: |
           $publishPath = "D:\Temp\actions-runner\_work\IISTry\IISTry\publish"
           echo "Publish path: $publishPath"
           & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release /p:PublishMethod=FileSystem /p:PublishUrl="$publishPath"
+
 
 
           
