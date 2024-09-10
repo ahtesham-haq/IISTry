@@ -21,11 +21,13 @@ jobs:
           }
       - name: Check Publish Profile Path
         run: |
-          if (Test-Path "Properties/PublishProfiles/FolderProfile.pubxml") {
-            echo "Profile path is correct"
+          $fullPath = "D:/Temp/actions-runner/_work/IISTry/IISTry/WebApplicationMy/Properties/PublishProfiles/FolderProfile.pubxml"
+          if (Test-Path $fullPath) {
+            echo "Full profile path is correct"
           } else {
-            echo "Profile path is incorrect"
+            echo "Full profile path is incorrect"
           }
+
 
       - name: Install NuGet CLI
         uses: nuget/setup-nuget@v1
