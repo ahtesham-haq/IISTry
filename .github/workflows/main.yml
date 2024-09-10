@@ -1,4 +1,4 @@
-name: Build and Publish .NET Framework 4.82
+name: Build and Publish .NET Framework 4.8
 
 on:
   push:
@@ -20,11 +20,10 @@ jobs:
             Enable-WindowsOptionalFeature -Online -FeatureName NetFx3
           }
 
-      
       - name: Install NuGet CLI
         uses: nuget/setup-nuget@v1
       
-      # Restore NuGet packages (if applicable)a
+      # Restore NuGet packages (if applicable)
       - name: Restore NuGet packages
         run: nuget restore
 
@@ -45,29 +44,25 @@ jobs:
           } else {
             Write-Error "MSBuild.exe not found"
           }
+
       - name: Ensure publish directory exists
         run: |
-          if (-Not (Test-Path -Path "${{ github.workspace }}/publish")) {
-            New-Item -Path "${{ github.workspace }}/publish" -ItemType Directory
+          if (-Not (Test-Path -Path "D:\Temp\actions-runner\_work\IISTry\IISTry\publish")) {
+            New-Item -Path "D:\Temp\actions-runner\_work\IISTry\IISTry\publish" -ItemType Directory
           }
-      - name: Publish using MSBuild
+
+      - name: Build solution using MSBuild
+        run: |
+          & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release
+
+      - name: Publish using WebDeploy
         run: |
           $publishProfile = "Properties\PublishProfiles\Profile.pubxml"
           $publishPath = "D:\Temp\actions-runner\_work\IISTry\IISTry\publish"
           echo "Publish profile: $publishProfile"
           echo "Publish path: $publishPath"
-          & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$publishPath"
+          & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile
 
-
-      - name: Build and Publish solution using MSBuild
-        run: |
-          $publishPath = "D:\Temp\actions-runner\_work\IISTry\IISTry\publish"
-          echo "Publish path: $publishPath"
-          & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release /p:PublishMethod=FileSystem /p:PublishUrl="$publishPath"
-
-
-
-          
       - name: List files in publish directory
         run: |
-          Get-ChildItem -Path "${{ github.workspace }}/publish" -Recurse
+          Get-ChildItem -Path "D:\Temp\actions-runner\_work\IISTry\IISTry\publish" -Recurse
