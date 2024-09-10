@@ -14,10 +14,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Setup .NET Framework 4.8 build environment
       - name: Setup .NET Framework 4.8
         run: |
-          Install-WindowsFeature -Name NET-Framework-Features
+          if ($env:OS -eq 'Windows_NT') {
+            Enable-WindowsOptionalFeature -Online -FeatureName NetFx3
+          }
+
       
       - name: Install NuGet CLI
         uses: nuget/setup-nuget@v1
