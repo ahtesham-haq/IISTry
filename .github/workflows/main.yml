@@ -19,10 +19,18 @@ jobs:
           if ($env:OS -eq 'Windows_NT') {
             Enable-WindowsOptionalFeature -Online -FeatureName NetFx3
           }
-      - name: Check Publish Profile Path Using Relative Path
+      - name: Debug Publish Profile Path
         run: |
+          # Print the current directory
+          Write-Host "Current directory: $(pwd)"
+          
           # Get the current working directory dynamically
           $repoRoot = (Get-Location).Path
+          
+          # Debug output to see what path is being used
+          Write-Host "Repo root: $repoRoot"
+          
+          # Construct the path to the publish profile
           $publishProfile = "$repoRoot/Properties/PublishProfiles/FolderProfile.pubxml"
           
           # Check if the publish profile exists
@@ -32,6 +40,7 @@ jobs:
             Write-Host "Full profile path is incorrect: $publishProfile"
           }
         shell: powershell
+
 
 
 
