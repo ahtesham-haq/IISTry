@@ -35,6 +35,8 @@ jobs:
             echo "MSBUILD_PATH=$($msbuildPath.FullName)" >> $env:GITHUB_ENV
           } else {
             Write-Error "MSBuild.exe not found"
+          }
+
 
       - name: Build solution using MSBuild
         run: |
