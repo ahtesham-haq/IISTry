@@ -14,6 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Setup .NET Framework 4.8
+        run: |
+          if ($env:OS -eq 'Windows_NT') {
+            Enable-WindowsOptionalFeature -Online -FeatureName NetFx3
+          }
 
       - name: Install NuGet CLI
         uses: nuget/setup-nuget@v1
@@ -21,7 +26,44 @@ jobs:
       # Restore NuGet packages
       - name: Restore NuGet packages
         run: nuget restore
-         
+
+      - name: Find MSBuild Path
+        run: |
+          $paths = @(
+            "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin",
+            "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin",
+            "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin"
+          )
+          $msbuildPath = $null
+          foreach ($path in $paths) {
+            $msbuildPath = Get-ChildItem -Path $path -Filter "MSBuild.exe" -ErrorAction SilentlyContinue
+            if ($msbuildPath) { break }
+          }
+          if ($msbuildPath) {
+            echo "MSBUILD_PATH=$($msbuildPath.FullName)" >> $env:GITHUB_ENV
+          } else {
+            Write-Error "MSBuild.exe not found"
+          }
+
+      - name: Ensure publish directory exists
+        run: |
+          if (-Not (Test-Path -Path "${{ github.workspace }}/publish")) {
+            New-Item -Path "${{ github.workspace }}/publish" -ItemType Directory
+          }
+
+      - name: Debug Working Directory and Paths
+        run: |
+          Write-Host "Current working directory: $(pwd)"
+          $repoRoot = (Get-Location).Path
+          Write-Host "Repo root: $repoRoot"
+          $publishProfile = "$repoRoot/Properties/PublishProfiles/FolderProfile.pubxml"
+          Write-Host "Publish profile path: $publishProfile"
+          if (Test-Path $publishProfile) {
+            Write-Host "Full profile path is correct: $publishProfile"
+          } else {
+            Write-Host "Full profile path is incorrect: $publishProfile"
+          }
+          
       - name: Stop IIS Application Pool
         run: |
           $appPoolName = "mydeploy" # Replace with your application pool name
@@ -35,7 +77,7 @@ jobs:
         run: |
           $publishProfile = "Properties/PublishProfiles/FolderProfile.pubxml"
           Write-Host "Publish profile: $publishProfile"
-          $env:MSBUILD_PATH "$($env:GITHUB_WORKSPACE)/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
+          & $env:MSBUILD_PATH "$($env:GITHUB_WORKSPACE)/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
 
       - name: Restart IIS Application Pool
         run: |
