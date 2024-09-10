@@ -50,6 +50,13 @@ jobs:
           if (-Not (Test-Path -Path "${{ github.workspace }}/publish")) {
             New-Item -Path "${{ github.workspace }}/publish" -ItemType Directory
           }
+      - name: Publish using MSBuild
+        run: |
+          $publishProfile = "Properties\PublishProfiles\Profile.pubxml"
+          $publishPath = "D:\Temp\actions-runner\_work\IISTry\IISTry\publish"
+          echo "Publish profile: $publishProfile"
+          echo "Publish path: $publishPath"
+          & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$publishPath"
 
 
       - name: Build and Publish solution using MSBuild
