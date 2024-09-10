@@ -24,7 +24,7 @@ jobs:
       - name: Install NuGet CLI
         uses: nuget/setup-nuget@v1
       
-      # Restore NuGet packages (if applicable)
+      # Restore NuGet packages (if applicable)a
       - name: Restore NuGet packages
         run: nuget restore
 
