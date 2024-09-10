@@ -47,22 +47,16 @@ jobs:
 
       - name: Ensure publish directory exists
         run: |
-          if (-Not (Test-Path -Path "D:\Temp\actions-runner\_work\IISTry\IISTry\publish")) {
-            New-Item -Path "D:\Temp\actions-runner\_work\IISTry\IISTry\publish" -ItemType Directory
+          if (-Not (Test-Path -Path "${{ github.workspace }}/publish")) {
+            New-Item -Path "${{ github.workspace }}/publish" -ItemType Directory
           }
 
-      - name: Build solution using MSBuild
-        run: |
-          & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release
-
-      - name: Publish using WebDeploy
+      - name: Publish using WebDeploy with Profile
         run: |
           $publishProfile = "Properties\PublishProfiles\Profile.pubxml"
-          $publishPath = "D:\Temp\actions-runner\_work\IISTry\IISTry\publish"
           echo "Publish profile: $publishProfile"
-          echo "Publish path: $publishPath"
           & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile
 
       - name: List files in publish directory
         run: |
-          Get-ChildItem -Path "D:\Temp\actions-runner\_work\IISTry\IISTry\publish" -Recurse
+          Get-ChildItem -Path "${{ github.workspace }}/publish" -Recurse
