@@ -19,14 +19,20 @@ jobs:
           if ($env:OS -eq 'Windows_NT') {
             Enable-WindowsOptionalFeature -Online -FeatureName NetFx3
           }
-      - name: Check Publish Profile Path
+      - name: Check Publish Profile Path Using Relative Path
         run: |
-          $fullPath = "D:/Temp/actions-runner/_work/IISTry/IISTry/WebApplicationMy/Properties/PublishProfiles/FolderProfile.pubxml"
-          if (Test-Path $fullPath) {
-            echo "Full profile path is correct"
+          # Get the current working directory dynamically
+          $repoRoot = (Get-Location).Path
+          $publishProfile = "$repoRoot/Properties/PublishProfiles/FolderProfile.pubxml"
+          
+          # Check if the publish profile exists
+          if (Test-Path $publishProfile) {
+            Write-Host "Full profile path is correct: $publishProfile"
           } else {
-            echo "Full profile path is incorrect"
+            Write-Host "Full profile path is incorrect: $publishProfile"
           }
+        shell: powershell
+
 
 
       - name: Install NuGet CLI
