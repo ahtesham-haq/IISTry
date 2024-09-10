@@ -56,8 +56,10 @@ jobs:
 
       - name: Publish to folder using MSBuild
         run: |
-          & $env:MSBUILD_PATH "${{ github.workspace }}/WebApplicationMy.sln" /p:Configuration=Release /p:PublishMethod=FileSystem /p:PublishUrl="${{ github.workspace }}/publish"
-          echo "Publish path: ${GITHUB_WORKSPACE}/publish"
+          $publishPath = "${{ github.workspace }}\publish"
+          echo "Publish path: $publishPath"
+          & $env:MSBUILD_PATH "${{ github.workspace }}\WebApplicationMy.sln" /p:Configuration=Release /p:PublishMethod=FileSystem /p:PublishUrl=$publishPath
+
           
       - name: List files in publish directory
         run: |
