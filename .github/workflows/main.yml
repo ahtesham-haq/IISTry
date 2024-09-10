@@ -64,8 +64,13 @@ jobs:
           Write-Host "Publish profile: $publishProfile"
           & "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" "$($env:GITHUB_WORKSPACE)/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
 
-      - name: Restart IIS Application Pool
+      - name: Check and Restart IIS Application Pool
         run: |
           $appPoolName = "mydeploy" # Replace with your application pool name
-          Import-Module WebAdministration          
-          Start-WebAppPool -Name $appPoolName
+          Import-Module WebAdministration
+          $appPool = Get-WebAppPoolState -Name $appPoolName
+          if ($appPool.Value -eq 'Started') {
+            Write-Host "Application pool $appPoolName is already started"
+          } else {
+            Write-Host "Starting application pool: $appPoolName"
+            Start-WebAppPool -Name $appPoolName
