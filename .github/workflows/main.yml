@@ -1,0 +1,45 @@
+name: Build and Publish .NET Framework 4.8
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Setup .NET Framework 4.8 build environment
+      - name: Setup .NET Framework 4.8
+        run: |
+          Install-WindowsFeature -Name NET-Framework-Features
+      
+      - name: Install NuGet CLI
+        uses: nuget/setup-nuget@v1
+      
+      # Restore NuGet packages (if applicable)
+      - name: Restore NuGet packages
+        run: nuget restore
+
+      - name: Find MSBuild Path
+        id: msbuild
+        run: |
+          $msbuildPath = & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
+          echo "MSBUILD_PATH=$msbuildPath" >> $env:GITHUB_ENV
+
+      - name: Build solution using MSBuild
+        run: |
+          & $env:MSBUILD_PATH "${{ github.workspace }}/WebApplicationMy.sln" /p:Configuration=Release
+
+      - name: Publish to folder using MSBuild
+        run: |
+          & $env:MSBUILD_PATH "${{ github.workspace }}/WebApplicationMy.sln" /p:Configuration=Release /p:PublishMethod=FileSystem /p:PublishUrl="${{ github.workspace }}/publish"
+
+      - name: List files in publish directory
+        run: |
+          Get-ChildItem -Path "${{ github.workspace }}/publish" -Recurse
