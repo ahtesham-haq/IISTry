@@ -22,19 +22,7 @@ jobs:
       - name: Restore NuGet packages
         run: nuget restore
 
-      - name: Debug Working Directory and Paths
-        run: |
-          Write-Host "Current working directory: $(pwd)"
-          $repoRoot = (Get-Location).Path
-          Write-Host "Repo root: $repoRoot"
-          $publishProfile = "$repoRoot/Properties/PublishProfiles/FolderProfile.pubxml"
-          Write-Host "Publish profile path: $publishProfile"
-          if (Test-Path $publishProfile) {
-            Write-Host "Full profile path is correct: $publishProfile"
-          } else {
-            Write-Host "Full profile path is incorrect: $publishProfile"
-          }
-          
+         
       - name: Check and Stop IIS Application Pool
         run: |
           $appPoolName = "mydeploy" # Replace with your application pool name
