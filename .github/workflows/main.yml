@@ -51,12 +51,13 @@ jobs:
             New-Item -Path "${{ github.workspace }}/publish" -ItemType Directory
           }
 
-      - name: Publish using MSBuild
-        working-directory: IISTry/WebApplicationMy
+      - name: Set working directory
+        working-directory: D:/Temp/actions-runner/_work/IISTry/IISTry/WebApplicationMy
         run: |
           $publishProfile = "Properties/PublishProfiles/FolderProfile.pubxml"
           echo "Publish profile: $publishProfile"
-          & $env:MSBUILD_PATH "WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile
+          & $env:MSBUILD_PATH "D:/Temp/actions-runner/_work/IISTry/IISTry/WebApplicationMy/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile
+
 
 
 
