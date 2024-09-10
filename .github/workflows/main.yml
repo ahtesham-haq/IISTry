@@ -45,6 +45,11 @@ jobs:
           } else {
             Write-Error "MSBuild.exe not found"
           }
+      - name: Ensure publish directory exists
+        run: |
+          if (-Not (Test-Path -Path "${{ github.workspace }}/publish")) {
+            New-Item -Path "${{ github.workspace }}/publish" -ItemType Directory
+          }
 
 
       - name: Build and Publish solution using MSBuild
