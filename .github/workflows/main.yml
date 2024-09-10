@@ -69,7 +69,7 @@ jobs:
         run: |
           $publishProfile = "Properties/PublishProfiles/FolderProfile.pubxml"
           Write-Host "Publish profile: $publishProfile"
-          & $env:MSBUILD_PATH "$($env:GITHUB_WORKSPACE)/WebApplicationMy/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
+          & $env:MSBUILD_PATH "$($env:GITHUB_WORKSPACE)/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
 
       - name: List files in publish directory
         run: |
