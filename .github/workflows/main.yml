@@ -1,4 +1,4 @@
-name: Build and Publish .NET Framework 4.8
+name: Build and Publish .NET Framework 4.82
 
 on:
   push:
