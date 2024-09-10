@@ -30,12 +30,22 @@ jobs:
 
       - name: Find MSBuild Path
         run: |
-          $msbuildPath = Get-ChildItem -Path "C:\Program Files (x86)\Microsoft Visual Studio" -Recurse -Filter "MSBuild.exe" | Select-Object -First 1
+          $paths = @(
+            "C:\Program Files (x86)\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin",
+            "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin",
+            "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin"
+          )
+          $msbuildPath = $null
+          foreach ($path in $paths) {
+            $msbuildPath = Get-ChildItem -Path $path -Filter "MSBuild.exe" -ErrorAction SilentlyContinue
+            if ($msbuildPath) { break }
+          }
           if ($msbuildPath) {
             echo "MSBUILD_PATH=$($msbuildPath.FullName)" >> $env:GITHUB_ENV
           } else {
             Write-Error "MSBuild.exe not found"
           }
+
 
 
       - name: Build solution using MSBuild
