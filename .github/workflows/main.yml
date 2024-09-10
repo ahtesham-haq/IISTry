@@ -19,6 +19,13 @@ jobs:
           if ($env:OS -eq 'Windows_NT') {
             Enable-WindowsOptionalFeature -Online -FeatureName NetFx3
           }
+      - name: Check Publish Profile Path
+        run: |
+          if (Test-Path "Properties/PublishProfiles/FolderProfile.pubxml") {
+            echo "Profile path is correct"
+          } else {
+            echo "Profile path is incorrect"
+          }
 
       - name: Install NuGet CLI
         uses: nuget/setup-nuget@v1
