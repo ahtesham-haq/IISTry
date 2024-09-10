@@ -19,35 +19,11 @@ jobs:
           if ($env:OS -eq 'Windows_NT') {
             Enable-WindowsOptionalFeature -Online -FeatureName NetFx3
           }
-      - name: Debug Publish Profile Path
-        run: |
-          # Print the current directory
-          Write-Host "Current directory: $(pwd)"
-          
-          # Get the current working directory dynamically
-          $repoRoot = (Get-Location).Path
-          
-          # Debug output to see what path is being used
-          Write-Host "Repo root: $repoRoot"
-          
-          # Construct the path to the publish profile
-          $publishProfile = "$repoRoot/Properties/PublishProfiles/FolderProfile.pubxml"
-          
-          # Check if the publish profile exists
-          if (Test-Path $publishProfile) {
-            Write-Host "Full profile path is correct: $publishProfile"
-          } else {
-            Write-Host "Full profile path is incorrect: $publishProfile"
-          }
-        shell: powershell
-
-
-
 
       - name: Install NuGet CLI
         uses: nuget/setup-nuget@v1
 
-      # Restore NuGet packages (if applicable)
+      # Restore NuGet packages
       - name: Restore NuGet packages
         run: nuget restore
 
@@ -75,16 +51,26 @@ jobs:
             New-Item -Path "${{ github.workspace }}/publish" -ItemType Directory
           }
 
-      - name: Set working directory
-        working-directory: D:/Temp/actions-runner/_work/IISTry/IISTry/WebApplicationMy
+      - name: Debug Working Directory and Paths
+        run: |
+          Write-Host "Current working directory: $(pwd)"
+          $repoRoot = (Get-Location).Path
+          Write-Host "Repo root: $repoRoot"
+          $publishProfile = "$repoRoot/Properties/PublishProfiles/FolderProfile.pubxml"
+          Write-Host "Publish profile path: $publishProfile"
+          if (Test-Path $publishProfile) {
+            Write-Host "Full profile path is correct: $publishProfile"
+          } else {
+            Write-Host "Full profile path is incorrect: $publishProfile"
+          }
+
+      - name: Set working directory and Build/Publish
+        working-directory: ${{ github.workspace }}/WebApplicationMy
         run: |
           $publishProfile = "Properties/PublishProfiles/FolderProfile.pubxml"
-          echo "Publish profile: $publishProfile"
-          & $env:MSBUILD_PATH "D:/Temp/actions-runner/_work/IISTry/IISTry/WebApplicationMy/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile
-
-
-
+          Write-Host "Publish profile: $publishProfile"
+          & $env:MSBUILD_PATH "$($env:GITHUB_WORKSPACE)/WebApplicationMy/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
 
       - name: List files in publish directory
         run: |
-          Get-ChildItem -Path "D:\Temp\actions-runner\_work\IISTry\IISTry\publish" -Recurse
+          Get-ChildItem -Path "${{ github.workspace }}/publish" -Recurse
