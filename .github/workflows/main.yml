@@ -43,11 +43,17 @@ jobs:
             Write-Host "Full profile path is incorrect: $publishProfile"
           }
           
-      - name: Stop IIS Application Pool
+      - name: Check and Stop IIS Application Pool
         run: |
           $appPoolName = "mydeploy" # Replace with your application pool name
           Import-Module WebAdministration
-          Stop-WebAppPool -Name $appPoolName
+          $appPool = Get-WebAppPoolState -Name $appPoolName
+          if ($appPool.Value -eq 'Started') {
+            Write-Host "Stopping application pool: $appPoolName"
+            Stop-WebAppPool -Name $appPoolName
+          } else {
+            Write-Host "Application pool $appPoolName is already stopped"
+          }
           
 
           
@@ -56,7 +62,7 @@ jobs:
         run: |
           $publishProfile = "Properties/PublishProfiles/FolderProfile.pubxml"
           Write-Host "Publish profile: $publishProfile"
-          "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" "$($env:GITHUB_WORKSPACE)/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
+          & "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" "$($env:GITHUB_WORKSPACE)/WebApplicationMy.sln" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=$publishProfile /p:PublishUrl="$($env:GITHUB_WORKSPACE)/publish"
 
       - name: Restart IIS Application Pool
         run: |
