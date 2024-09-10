@@ -50,8 +50,9 @@ jobs:
 
       - name: Build solution using MSBuild
         run: |
-          & $env:MSBUILD_PATH "${{ github.workspace }}/WebApplicationMy.sln" /p:Configuration=Release
-          echo "Build path: ${GITHUB_WORKSPACE}/WebApplicationMy.sln"
+         $solutionPath = "${{ github.workspace }}\WebApplicationMy.sln"
+          echo "Build path: $solutionPath"
+          & $env:MSBUILD_PATH $solutionPath /p:Configuration=Release
 
       - name: Publish to folder using MSBuild
         run: |
